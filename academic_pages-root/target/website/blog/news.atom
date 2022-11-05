@@ -1,0 +1,1704 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
+    <id>https://www.beautifulnature.github.io/</id>
+    <title>Academic_Pages</title>
+    <updated>2022-11-05T00:00:00+00:00</updated>
+    <link href="https://www.beautifulnature.github.io/blog/news.atom" rel="self" type="application/atom+xml" />
+    <link href="https://www.beautifulnature.github.io/" rel="alternate" type="text/html" />
+    <icon>https://www.beautifulnature.github.io/favicon.ico</icon>
+    <logo>https://www.beautifulnature.github.io/headerFooter/optaPlannerLogo200px.png</logo>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2022/09/01/Bavet-a-faster-score-engine-for-OptaPlanner.html</id>
+            <title type="html">Bavet - A faster score engine for OptaPlanner</title>
+            <updated>2022-09-05T00:00:00+00:00</updated>
+            <published>2022-09-05T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2022/09/01/Bavet-a-faster-score-engine-for-OptaPlanner.html" rel="alternate" type="text/html" />
+            <author>
+                <name>ge0ffrey</name>
+            </author>
+                    <category term="performance"></category>
+                    <category term="benchmark"></category>
+                    <category term="constraint streams"></category>
+            <summary type="html">
+                 Drools is an extremely fast rule engine. Under the hood, OptaPlanner has used Drools as a score engine for ages. Today, we&amp;#8217;re announcing a faster, lightweight alternative: Bavet. Bavet is a ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Drools is an extremely fast &lt;em&gt;rule engine&lt;/em&gt;.
+Under the hood, OptaPlanner has used Drools as a &lt;em&gt;score engine&lt;/em&gt; for ages.
+Today, we&amp;#8217;re announcing &lt;strong&gt;a faster, lightweight alternative&lt;/strong&gt;: Bavet.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Bavet is a feature of OptaPlanner. It is &lt;strong&gt;not a rule engine&lt;/strong&gt;.
+It is a pure, single-purpose, incremental &lt;strong&gt;score calculation implementation&lt;/strong&gt;
+of the &lt;a href=&quot;https://www.optaplanner.org/blog/2020/04/07/ConstraintStreams.html&quot;&gt;ConstraintStreams API&lt;/a&gt;.
+Bavet is &lt;em&gt;feature complete&lt;/em&gt; as of OptaPlanner &lt;code&gt;8.27.0.Final&lt;/code&gt;.
+You can switch from Drools to Bavet in a single line of code.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Twice as fast score calculation. Zero API changes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_faster&quot;&gt;Faster&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For 20 diverse use cases, we compared Bavet and Drools for OptaPlanner score calculation.
+We ran JMH benchmarks
+on OpenJDK 17 (&lt;code&gt;ParallelGC&lt;/code&gt;, &lt;code&gt;Xmx1G&lt;/code&gt;)
+on a stable benchmark machine (&lt;code&gt;Intel® Xeon® Silver (12 cores total / 24 threads)&lt;/code&gt; and &lt;code&gt;128 GiB&lt;/code&gt; RAM memory)
+without any other computational demanding processes running.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;On average, &lt;strong&gt;Bavet is twice as fast as Drools&lt;/strong&gt; for score calculation.
+In the &lt;a href=&quot;https://www.optaplanner.org/learn/useCases/vehicleRoutingProblem.html&quot;&gt;Vehicle Routing Problem&lt;/a&gt;,
+Bavet is even three times as fast as Drools:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;span class=&quot;image&quot;&gt;&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/09/01/bavetUseCasesPerformanceChart.png&quot; alt=&quot;Score calculation speed on different use cases&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&quot;tableblock frame-all grid-all stretch&quot;&gt;
+&lt;caption class=&quot;title&quot;&gt;Table 1. Score calculation speed on different use cases&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&quot;width: 25%;&quot;&gt;
+&lt;col style=&quot;width: 25%;&quot;&gt;
+&lt;col style=&quot;width: 25%;&quot;&gt;
+&lt;col style=&quot;width: 25%;&quot;&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;Use case&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;Drools&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;Bavet&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;Speed up&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;cheaptime&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;4,349&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;14,543&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+234%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;cloudbalancing&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;162,820&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;608,204&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+274%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;coachShuttleGathering&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;38,543&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;111,991&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+191%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;conferenceScheduling&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;1,072&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;1,264&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+18%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;curriculumCourse&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;32,272&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;38,933&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+21%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;examination&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;11,821&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;25,712&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+118%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;flightCrewScheduling&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;97,020&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;126,563&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+30%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;investment&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;68,935&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;401,806&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+483%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;machineReassignment&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;13,384&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;28,619&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+114%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;meetingscheduling&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;2,291&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;2,158&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;-6%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;nQueens&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;177,528&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;285,268&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+61%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;nurserostering&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;10,657&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;21,090&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+98%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;pas&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;50,971&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;47,551&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;-7%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;projectjobscheduling&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;23,715&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;78,291&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+230%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;rockTour&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;33,997&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;152,472&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+348%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;taskAssigning&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;10,531&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;20,680&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+96%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;tennis&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;106,172&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;236,437&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+123%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;travelingtournament&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;49,428&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;77,143&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+56%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;tsp&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;169,125&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;430,384&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+154%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;vehicleRouting&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;8,247&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;26,187&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+218%&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;Average:&lt;/p&gt;&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;53,644&lt;/p&gt;&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;136,765&lt;/p&gt;&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+132%&lt;/p&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Bavet is faster than Drools for 90% of the use cases.
+Of course, your mileage may vary.
+Turn on Bavet and if it&amp;#8217;s not faster in your use case, &lt;a href=&quot;https://groups.google.com/g/optaplanner-dev/c/BqwbHbBJbns&quot;&gt;let us know&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Drools and Bavet are both still improving.
+This performance race is far from over.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_scaling&quot;&gt;Scaling&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Does Bavet scale well?&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;On commodity hardware, we ran a 5 minutes VRP benchmark on different dataset sizes,
+to compare how Drools and Bavet scale up:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;span class=&quot;image&quot;&gt;&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/09/01/bavetVrpScalingChart.png&quot; alt=&quot;Score calculation speed on different dataset sizes of VRP&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&quot;tableblock frame-all grid-all stretch&quot;&gt;
+&lt;caption class=&quot;title&quot;&gt;Table 2. Score calculation speed on different dataset sizes of VRP&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&quot;width: 14.2857%;&quot;&gt;
+&lt;col style=&quot;width: 14.2857%;&quot;&gt;
+&lt;col style=&quot;width: 14.2857%;&quot;&gt;
+&lt;col style=&quot;width: 14.2857%;&quot;&gt;
+&lt;col style=&quot;width: 14.2857%;&quot;&gt;
+&lt;col style=&quot;width: 14.2857%;&quot;&gt;
+&lt;col style=&quot;width: 14.2858%;&quot;&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;belgium-n50-k10&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;belgium-n100-k10&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;belgium-n500-k20&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;belgium-n1000-k20&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;belgium-n2750-k55&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;Average&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;Drools&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;76,919/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;58,365/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;36,609/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;23,394/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;29,770/s&lt;/p&gt;&lt;/td&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;45,011/s&lt;/p&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;Bavet&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;307,290/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;242,400/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;147,595/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;89,850/s&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;91,115/s&lt;/p&gt;&lt;/td&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;175,650/s&lt;/p&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;Speed up&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+299.50%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+315.32%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+303.17%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+284.07%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+206.06%&lt;/p&gt;&lt;/td&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;+290.24%&lt;/p&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Same story, but the performance gap does close as the scale goes up.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_not_a_rule_engine&quot;&gt;Not a rule engine&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Bavet is &lt;em&gt;not&lt;/em&gt; a rule engine.&lt;/strong&gt;
+It deliberately doesn&amp;#8217;t support &lt;em&gt;inference&lt;/em&gt;, nor Complex Event Processing (CEP),
+nor other common business rule engine features:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;span class=&quot;image&quot;&gt;&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/09/01/ruleEngineScoreEngineScope.png&quot; alt=&quot;Rule Engine versus Score Engine scope&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;OptaPlanner only requires a score engine.
+Its Drools implementation only uses a small subset of Drools&amp;#8217;s features.
+Bavet on the other hand, is a score engine tailored to OptaPlanner.
+It&amp;#8217;s part of OptaPlanner. It has no use outside of OptaPlanner.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For incremental score calculation, Bavet borrows techniques from &lt;a href=&quot;https://en.wikipedia.org/wiki/Rete_algorithm&quot;&gt;the RETE algorithm&lt;/a&gt;
+and Drools&amp;#8217;s Phreak algorithm.
+For example, the &lt;a href=&quot;https://github.com/kiegroup/optaplanner/blob/main/core/optaplanner-constraint-streams-bavet/src/main/java/org/optaplanner/constraint/streams/bavet/common/AbstractJoinNode.java&quot;&gt;JoinNode in Bavet&lt;/a&gt;
+contains &lt;code&gt;insert()&lt;/code&gt;, &lt;code&gt;update()&lt;/code&gt; and &lt;code&gt;retract()&lt;/code&gt;  methods.
+But below the surface, it&amp;#8217;s a very different implementation.
+Compare it with the method signatures of similar methods in the &lt;a href=&quot;https://github.com/kiegroup/drools/blob/main/drools-core/src/main/java/org/drools/core/phreak/PhreakJoinNode.java&quot;&gt;JoinNode in Drools&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_history_and_naming&quot;&gt;History and naming&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I created Bavet as a &lt;a href=&quot;https://github.com/ge0ffrey/bavet-experiment&quot;&gt;POC&lt;/a&gt; in 2019
+and added it into OptaPlanner as an experimental, fast, incomplete feature.
+There it sat frozen. For 3 years.
+Until recently, when Lukáš Petrovický and me completed all missing features
+and refactored it to the performance sensation is today.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Naming wise, &lt;em&gt;bavet&lt;/em&gt; is a Flemish (Dutch) slang word for a &lt;em&gt;bib&lt;/em&gt;.
+Very useful if your baby is drooling.
+I came up with that name when we were eating with our kids at a spaghetti restaurant called Bavet,
+while facing this mural:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;span class=&quot;image&quot;&gt;&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/09/01/bavetEinsteinMural.png&quot; alt=&quot;Bavet mural&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Ok, maybe I didn&amp;#8217;t put much effort into that.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;But it doesn&amp;#8217;t really need a good name.
+It&amp;#8217;s just one of OptaPlanner&amp;#8217;s score calculation options.
+An implementation detail, really.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_stability&quot;&gt;Stability&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We believe Bavet is very stable.
+We successfully run our 48+ hours stress tests on Bavet regularly.
+These stress tests stomp out score corruption by solving a lot of datasets across many use cases.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_more_lightweight&quot;&gt;More lightweight&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In OpenShift and Kubernetes clouds, the size of pods matter.
+By using Bavet, you can slim down OptaPlanner&amp;#8217;s classpath
+to exclude the Drools dependencies.
+The Bavet jar is &lt;code&gt;400 KB&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;On the OptaPlanner &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts/tree/stable/hello-world&quot;&gt;hello-world quickstart&lt;/a&gt;,
+a Maven assembly of &lt;code&gt;jar-with-dependencies&lt;/code&gt; with only Bavet included is &lt;code&gt;10 MB&lt;/code&gt; smaller:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;span class=&quot;image&quot;&gt;&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/09/01/bavetDistributionSizeChart.png&quot; alt=&quot;Distribution size of jar-with-dependencies on OptaPlanner&amp;#8217;s hello-world&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;table class=&quot;tableblock frame-all grid-all stretch&quot;&gt;
+&lt;caption class=&quot;title&quot;&gt;Table 3. Distribution size of jar-with-dependencies on OptaPlanner&amp;#8217;s hello-world&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col style=&quot;width: 25%;&quot;&gt;
+&lt;col style=&quot;width: 12.5%;&quot;&gt;
+&lt;col style=&quot;width: 12.5%;&quot;&gt;
+&lt;col style=&quot;width: 50%;&quot;&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;Core dependencies&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;Size&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-right valign-top&quot;&gt;Reduction&lt;/th&gt;
+&lt;th class=&quot;tableblock halign-left valign-top&quot;&gt;Core exclusions&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;All (default)&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;17.5&amp;#160;MB&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;0%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;none&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;Drools CS only&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;17.1&amp;#160;MB&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;-2%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;&lt;code&gt;optaplanner-constraint-drl&lt;/code&gt;, &lt;code&gt;optaplanner-constraint-streams-bavet&lt;/code&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;Bavet CS only&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;7.0&amp;#160;MB&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-right valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;-60%&lt;/p&gt;&lt;/td&gt;
+&lt;td class=&quot;tableblock halign-left valign-top&quot;&gt;&lt;p class=&quot;tableblock&quot;&gt;&lt;code&gt;optaplanner-constraint-drl&lt;/code&gt;, &lt;code&gt;optaplanner-constraint-streams-drools&lt;/code&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;By default, &lt;code&gt;optaplanner-core&lt;/code&gt; includes both Drools and Bavet,
+so you have to explicitly exclude it in Maven or Gradle:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-xml hljs&quot; data-lang=&quot;xml&quot;&gt;    &amp;lt;dependency&amp;gt;
+      &amp;lt;groupId&amp;gt;org.optaplanner&amp;lt;/groupId&amp;gt;
+      &amp;lt;artifactId&amp;gt;optaplanner-core&amp;lt;/artifactId&amp;gt;
+      &amp;lt;exclusions&amp;gt;
+        &amp;lt;exclusion&amp;gt;
+          &amp;lt;groupId&amp;gt;org.optaplanner&amp;lt;/groupId&amp;gt;
+          &amp;lt;artifactId&amp;gt;optaplanner-constraint-drl&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/exclusion&amp;gt;
+        &amp;lt;exclusion&amp;gt;
+          &amp;lt;groupId&amp;gt;org.optaplanner&amp;lt;/groupId&amp;gt;
+          &amp;lt;artifactId&amp;gt;optaplanner-constraint-streams-drools&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/exclusion&amp;gt;
+      &amp;lt;/exclusions&amp;gt;
+    &amp;lt;/dependency&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This reduces &lt;code&gt;optaplanner-core&lt;/code&gt; from 42 to 17 transitive dependencies.
+Specifically, all these jars are removed from your classpath:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-none hljs&quot;&gt;\- org.optaplanner:optaplanner-constraint-streams-drools:...
+   +- org.drools:drools-engine:...
+   |  +- org.kie:kie-api:...
+   |  +- org.kie:kie-internal:...
+   |  +- org.drools:drools-core:...
+   |  |  +- org.kie:kie-util-xml:...
+   |  |  +- org.drools:drools-wiring-api:...
+   |  |  +- org.drools:drools-wiring-static:...
+   |  |  +- org.drools:drools-util:...
+   |  |  \- commons-codec:commons-codec:...
+   |  +- org.drools:drools-wiring-dynamic:...
+   |  +- org.drools:drools-kiesession:...
+   |  +- org.drools:drools-tms:...
+   |  +- org.drools:drools-compiler:...
+   |  |  +- org.drools:drools-drl-parser:...
+   |  |  +- org.drools:drools-drl-extensions:...
+   |  |  +- org.drools:drools-drl-ast:...
+   |  |  +- org.kie:kie-memory-compiler:...
+   |  |  +- org.drools:drools-ecj:...
+   |  |  +- org.kie:kie-util-maven-support:...
+   |  |  \- org.antlr:antlr-runtime:...
+   |  +- org.drools:drools-model-compiler:...
+   |  |  \- org.drools:drools-canonical-model:...
+   |  \- org.drools:drools-model-codegen:...
+   |     +- org.drools:drools-codegen-common:...
+   |     +- com.github.javaparser:javaparser-core:...
+   |     +- org.drools:drools-mvel-parser:...
+   |     \- org.drools:drools-mvel-compiler:...
+   \- org.drools:drools-alphanetwork-compiler:...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Bavet (&lt;code&gt;optaplanner-constraint-streams-bavet&lt;/code&gt;) has no transitive dependencies
+(except for &lt;code&gt;optaplanner-constraint-streams-common&lt;/code&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_try_it_out&quot;&gt;Try it out&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;First upgrade to OptaPlanner &lt;code&gt;8.27.0.Final&lt;/code&gt; or later, if you haven&amp;#8217;t already.
+If you&amp;#8217;re using the deprecated &lt;code&gt;scoreDRL&lt;/code&gt; approach, &lt;a href=&quot;https://www.optaplanner.org/download/upgradeRecipe/drl-to-constraint-streams-migration.html&quot;&gt;migrate from scoreDRL to constraint streams&lt;/a&gt; first.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;strong&gt;By default, OptaPlanner still uses Drools for constraint streams.&lt;/strong&gt;
+To use Bavet instead, explicitly switch the &lt;code&gt;ConstraintStreamImplType&lt;/code&gt; to &lt;code&gt;BAVET&lt;/code&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_plain_java&quot;&gt;Plain Java&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Switch to Bavet in either your &lt;code&gt;*.java&lt;/code&gt; file:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;SolverFactory&amp;lt;TimeTable&amp;gt; solverFactory = SolverFactory.create(new SolverConfig()
+        ...
+        .withConstraintStreamImplType(ConstraintStreamImplType.BAVET)
+        ...);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;or in your &lt;code&gt;solverConfig.xml&lt;/code&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-xml hljs&quot; data-lang=&quot;xml&quot;&gt;  &amp;lt;scoreDirectorFactory&amp;gt;
+    ...
+    &amp;lt;constraintStreamImplType&amp;gt;BAVET&amp;lt;/constraintStreamImplType&amp;gt;
+  &amp;lt;/scoreDirectorFactory&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_quarkus&quot;&gt;Quarkus&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Switch to Bavet in &lt;code&gt;src/main/resources/application.properties&lt;/code&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;quarkus.optaplanner.solver.constraintStreamImplType=BAVET&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_spring&quot;&gt;Spring&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Switch to Bavet in &lt;code&gt;src/main/resources/application.properties&lt;/code&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;optaplanner.solver.constraintStreamImplType=BAVET&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_share_your_results&quot;&gt;Share your results&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Help us out. Try Bavet and &lt;strong&gt;&lt;a href=&quot;https://groups.google.com/g/optaplanner-dev/c/BqwbHbBJbns&quot;&gt;let us know here&lt;/a&gt;
+how your &lt;em&gt;score calculation speed&lt;/em&gt; changes&lt;/strong&gt;.
+Look for the score calculation speed in the &lt;code&gt;INFO&lt;/code&gt; log: it&amp;#8217;s part of the &lt;code&gt;Solving ended&lt;/code&gt; message.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_red_hat_support&quot;&gt;Red Hat support&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;A Red Hat support subscription will not offer support for Bavet.
+Drools intends to catch up performance wise.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2022/06/09/RunOptaPlannerWorkloadOnOpenShift.html</id>
+            <title type="html">Run OptaPlanner workloads on OpenShift, part I.</title>
+            <updated>2022-06-08T00:00:00+00:00</updated>
+            <published>2022-06-08T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2022/06/09/RunOptaPlannerWorkloadOnOpenShift.html" rel="alternate" type="text/html" />
+            <author>
+                <name>rsynek</name>
+            </author>
+                    <category term="cloud"></category>
+                    <category term="openshift"></category>
+                    <category term="kubernetes"></category>
+            <summary type="html">
+                 Have you ever wondered if OptaPlanner can leverage any cloud platform and scale horizontally? Recently, we have added a new (experimental) optaplanner-operator module that will simplify running ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Have you ever wondered if OptaPlanner can leverage any cloud platform and scale horizontally?
+Recently, we have added a new (experimental) &lt;code&gt;optaplanner-operator&lt;/code&gt; module that will simplify running OptaPlanner workloads on Kubernetes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In this article I am going to show how to use the OptaPlanner Operator to deploy and scale &lt;a href=&quot;https://www.redhat.com/en/technologies/cloud-computing/openshift&quot;&gt;school timetabling on OpenShift&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The source code is available in the &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts/tree/development/technology/kubernetes&quot;&gt;Kubernetes demo&lt;/a&gt;,
+along with the other &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts&quot;&gt;Optaplanner Quickstarts&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_architecture&quot;&gt;Architecture&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/06/09/demoArchitecture.svg&quot; alt=&quot;OpenShift demo architecture diagram&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The demo consists of two projects - the School Timetabling, which defines the optimization problem, and the Demo App,
+which generates datasets and asks the School Timetabling to solve them. Both these projects are &lt;a href=&quot;https://quarkus.io/&quot;&gt;Quarkus&lt;/a&gt; applications.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;These two parts communicate via Kafka topics created by the OptaPlanner Operator: the &lt;code&gt;school-timetabling-problem&lt;/code&gt;
+and the &lt;code&gt;school-timetabling-solution&lt;/code&gt;. The Demo App stores a dataset into the PostgreSQL database and sends a message
+to the &lt;code&gt;school-timetabling-problem&lt;/code&gt; topic. The School Timetabling reads the message, loads the dataset from the database
+and solves it. After that, it stores the solution back to the database and sends a message to the &lt;code&gt;school-timetabling-solution&lt;/code&gt;
+topic to let the Demo App know the solution is ready for taking.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;On the face of it, the PostgreSQL makes the architecture more complex, as the Demo App could have sent the dataset directly in a Kafka message.
+However, Kafka has been designed to process huge amounts of small messages, which is not exactly our case.
+The datasets, although not coming in millions, might possibly be huge, requiring some sort of storage to be paired up with the Kafka messages.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_solver_operator&quot;&gt;Solver Operator&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The OptaPlanner Operator is a Quarkus application developed on top of the &lt;a href=&quot;https://javaoperatorsdk.io&quot;&gt;Java Operator SDK&lt;/a&gt;.
+Its job is to ensure all the Kubernetes resources needed by the solver are in place: it creates Kafka topics and a deployment that
+runs the solver project; in this case, the School Timetabling.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_running_the_demo&quot;&gt;Running the demo&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To run the demo, just clone the &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts&quot;&gt;Optaplanner Quickstarts&lt;/a&gt; and follow the &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts/blob/development/technology/kubernetes/README.adoc&quot;&gt;README&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_scaling_the_school_timetabling&quot;&gt;Scaling the School Timetabling&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Once you&amp;#8217;ve got the demo running and the School Timetabling pod solves datasets you throw at it, it&amp;#8217;s time to take it a bit further.
+Remember, the main reason for deploying all the pieces to OpenShift was to be able to scale horizontally.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To solve multiple datasets in parallel, we have to start more School Timetabling pods and increase the number
+&lt;code&gt;school-timetabling-problem&lt;/code&gt; partitions.
+The &lt;code&gt;spec.scaling.replicas&lt;/code&gt; in the Solver custom resource defines the number of pods and topic partitions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In order to have multiple consumers reading different messages from the same Kafka topic without duplication, the consumers must belong to the same consumer group.
+The property &lt;code&gt;mp.messaging.incoming.solver_in.group.id=default&lt;/code&gt; in the &lt;code&gt;school-timetabling/src/resources/application.properties&lt;/code&gt; ensures that each pod belongs to the &lt;code&gt;default&lt;/code&gt; consumer group.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Let&amp;#8217;s see how the custom resource changes if we want to have three School Timetabling pods:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-yaml hljs&quot; data-lang=&quot;yaml&quot;&gt;apiVersion: org.optaplanner.solver/v1beta1
+kind: Solver
+metadata:
+  name: school-timetabling
+spec:
+  ...
+  scaling:
+    replicas: 3&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To update the Solver resource:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;delete the existing Solver resource via &lt;code&gt;oc delete solver school-timetabling&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;create the updated Solver resource via &lt;code&gt;oc apply -f &amp;lt;file&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;check if the &lt;code&gt;school-timetabling-problem&lt;/code&gt; Kafka topic now has 3 partitions via &lt;code&gt;oc get kafkatopic school-timetabling-problem&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;check if there are 3 running School Timetabling pods via &lt;code&gt;oc get pod&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In the Demo App, create and send multiple datasets.
+Check the logs of individual School Timetabling pods by running &lt;code&gt;oc logs &amp;lt;pod name&amp;gt;&lt;/code&gt; to find out whether they solved some datasets.
+The following messages should appear in the logs for each solver dataset:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;2022-05-27 11:12:21,336 INFO  [org.opt.cor.imp.sol.DefaultSolver] (Thread-3) Solving started: time spent (76), best score (-80init/0hard/0soft), environment mode (REPRODUCIBLE), move thread count (NONE), random (JDK with seed 0).
+...
+2022-05-27 11:12:31,249 INFO  [org.opt.cor.imp.sol.DefaultSolver] (Thread-3) Solving ended: time spent (10001), best score (0hard/18soft), score calculation speed (40162/sec), phase total (2), environment mode (REPRODUCIBLE), move thread count (NONE).&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;OptaPlanner is starting its journey towards Kubernetes and OpenShift.
+The nice thing about the outlined architecture is that if you have another planning problem, you just create a new Solver resource  pointing to a different container image, and you get a separate deployment and a separate pair of the problem-solution topics.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;There is still a lot of things users have to do themselves, things I would like the OptaPlanner Operator to take care of in the future.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Stay tuned, this is just the beginning!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2022/05/26/optaplanner-deprecates-score-drl.html</id>
+            <title type="html">OptaPlanner deprecates score DRL</title>
+            <updated>2022-05-25T00:00:00+00:00</updated>
+            <published>2022-05-25T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2022/05/26/optaplanner-deprecates-score-drl.html" rel="alternate" type="text/html" />
+            <author>
+                <name>triceo</name>
+            </author>
+                    <category term="constraint"></category>
+                    <category term="constraint streams"></category>
+                    <category term="drl"></category>
+                    <category term="deprecation"></category>
+            <summary type="html">
+                 TLDR: The time to switch from scoreDRL to Constraint Streams is now. Here&amp;#8217;s the score DRL migration guide. Score DRL is not going away in OptaPlanner 8. The rise of Constraint Streams As I ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;TLDR: The time to switch from scoreDRL to &lt;a href=&quot;https://www.optaplanner.org/docs/optaplanner/latest/constraint-streams/constraint-streams.html&quot;&gt;Constraint Streams&lt;/a&gt; is now.
+Here&amp;#8217;s the &lt;a href=&quot;https://www.optaplanner.org/download/upgradeRecipe/drl-to-constraint-streams-migration.html&quot;&gt;score DRL migration guide&lt;/a&gt;.
+Score DRL is not going away in OptaPlanner 8.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_the_rise_of_constraint_streams&quot;&gt;The rise of Constraint Streams&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As I was starting with OptaPlanner more than a decade ago, score DRL was there, promising easy and fast score calculation.
+It wasn&amp;#8217;t as fast as the Incremental Java calculator, but it also wasn&amp;#8217;t as hard to write while still getting better results than the Easy Java calculator.
+On the other hand, it required me to learn a new programming language.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;When I joined the OptaPlanner core team several years ago, I decided that we can do better.
+With the help of many other people, we introduced the Constraint Streams API.
+Constraint Streams, while still implemented using Drools under the hood, is a well-performing pure Java API for writing score constraints in OptaPlanner.
+Since its introduction in 2020, we kept improving it until it reached a full feature set in 2021 and has become the new default.
+Now, a further full year later, we are finally ready to announce the deprecation of score DRL.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_what_does_it_mean&quot;&gt;What does it mean?&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Starting with OptaPlanner 8.23.0.Final, users of score DRL will be getting IDE and logging notifications that score DRL is deprecated, encouraging migration to Constraint Streams.
+Rest assured that support for score DRL will not be removed in OptaPlanner 8.
+The next major version of OptaPlanner, however, will no longer support score DRL.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_how_to_migrate&quot;&gt;How to migrate?&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We understand that constraints are a fundamental part of your application, and that refactoring them to Constraint Streams will take time.
+To make this job as easy as possible, we have prepared a &lt;a href=&quot;https://www.optaplanner.org/download/upgradeRecipe/drl-to-constraint-streams-migration.html&quot;&gt;migration guide&lt;/a&gt; which explains the most typical use cases and migration patterns.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We believe that, while reading the guide, you will realize that the migration is fairly straight-forward in most cases.
+In return, you will get fast constraints written in Java that are ready for Quarkus and the cloud, with full IDE support and a &lt;a href=&quot;https://www.optaplanner.org/docs/optaplanner/latest/constraint-streams/constraint-streams.html#constraintStreamsTesting&quot;&gt;comprehensive testing framework&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;And as always, if you&amp;#8217;re ever stuck, we are &lt;a href=&quot;https://www.optaplanner.org/community/getHelp.html&quot;&gt;here to help&lt;/a&gt;.
+Onwards with Constraint Streams!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2022/03/07/Real-time+planning+meets+the+SolverManager.html</id>
+            <title type="html">Real-time planning meets SolverManager</title>
+            <updated>2022-03-06T00:00:00+00:00</updated>
+            <published>2022-03-06T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2022/03/07/Real-time+planning+meets+the+SolverManager.html" rel="alternate" type="text/html" />
+            <author>
+                <name>rsynek</name>
+            </author>
+                    <category term="real-time planning"></category>
+                    <category term="SolverManager"></category>
+            <summary type="html">
+                 For some optimization problems it may take minutes or even hours before an acceptable solution is found. The world, however, will not wait until the computation is finished. What if an employee ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For some optimization problems it may take minutes or even hours before an acceptable solution is found.
+The world, however, will not wait until the computation is finished. What if an employee calls in sick or a vehicle
+breaks down? With OptaPlanner, you can either reload the updated problem, or react in real time by submitting a &lt;code&gt;ProblemChange&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Before we look at problem changes and the &lt;code&gt;SolverManager&lt;/code&gt; API, let&amp;#8217;s get familiar with the problem domain used in all the following examples,
+Cloud Balance:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2022/03/07/cloudBalanceClassDiagram.png&quot; alt=&quot;Cloud Balance class diagram&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Every computer has some capacity of CPU, memory and network bandwidth. Processes, on the other hand, require certain
+amount of the same resources. Processes are the planning entities; they are being assigned to computers.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_anatomy_of_a_problemchange&quot;&gt;Anatomy of a ProblemChange&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;code&gt;ProblemChange&lt;/code&gt; replaces the &lt;code&gt;ProblemFactChange&lt;/code&gt; interface, allowing incremental changes of the working solution during
+solving without reloading it, just as the &lt;code&gt;ProblemFactChange&lt;/code&gt; does. However, the &lt;code&gt;ProblemChange&lt;/code&gt; reduces
+the amount of required boilerplate code and also leaves less room for mistakes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;public interface ProblemChange&amp;lt;Solution&amp;gt; {
+
+    void doChange(Solution workingSolution, ProblemChangeDirector problemChangeDirector);
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The &lt;code&gt;doChange()&lt;/code&gt; method, which you have to implement, receives the working solution and the &lt;code&gt;ProblemChangeDirector&lt;/code&gt;.
+Any change to the working solution has to be done via &lt;code&gt;ProblemChangeDirector&lt;/code&gt; methods. Otherwise, OptaPlanner doesn&amp;#8217;t notice the change.
+Let&amp;#8217;s have a look at the following problem change that adds a new planning entity:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;public class AddProcessProblemChange implements ProblemChange&amp;lt;CloudBalance&amp;gt; {
+
+    private final CloudProcess process; // &lt;b class=&quot;conum&quot;&gt;(1)&lt;/b&gt;
+
+    public AddProcessProblemChange(CloudProcess process) {
+        this.process = process;
+    }
+
+    @Override
+    public void doChange(CloudBalance cloudBalance, ProblemChangeDirector problemChangeDirector) {
+        problemChangeDirector.addEntity(process, cloudBalance.getProcessList()::add); // &lt;b class=&quot;conum&quot;&gt;(2)&lt;/b&gt;
+    }
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;The new &lt;code&gt;CloudProcess&lt;/code&gt; instance.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;addEntity()&lt;/code&gt; method takes the process and a lambda describing how the new process should be included in the working solution.
+Here we add the process to the collection of all processes in the working solution.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Every time OptaPlanner finds a new best solution, a component called &lt;code&gt;SolutionCloner&lt;/code&gt; clones the working solution, which, unlike the best solution,
+keeps changing until the solving terminates. However, for performance reasons, OptaPlanner does not make a deep clone of the working solution;
+it clones only those parts of the solution that change during solving - the planning entities.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Other instances, called problem facts, are not cloned and thus the working solution and all the best solutions found during solving share them.
+This is usually the right thing to do, but not if the problem facts change as a part of your &lt;code&gt;ProblemChange&lt;/code&gt; implementation.
+In that case, any problem fact or a problem fact collection must be cloned first, otherwise you may corrupt your previous best solutions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For more details about solution cloning, please read the &lt;a href=&quot;https://www.optaplanner.org/docs/optaplanner/latest/planner-configuration/planner-configuration.html#cloningASolution&quot;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In the next example, we are removing a &lt;code&gt;CloudComputer&lt;/code&gt;, which is a problem fact:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;public class DeleteComputerProblemChange implements ProblemChange&amp;lt;CloudBalance&amp;gt; {
+
+    private final CloudComputer computer;
+
+    public DeleteComputerProblemChange(CloudComputer computer) {
+        this.computer = computer;
+    }
+
+    @Override
+    public void doChange(CloudBalance cloudBalance, ProblemChangeDirector problemChangeDirector) {
+        CloudComputer workingComputer = problemChangeDirector.lookUpWorkingObjectOrFail(computer); // &lt;b class=&quot;conum&quot;&gt;(1)&lt;/b&gt;
+        for (CloudProcess process : cloudBalance.getProcessList()) {
+            if (process.getComputer() == workingComputer) {
+                problemChangeDirector.changeVariable(process, &quot;computer&quot;,
+                    workingProcess -&amp;gt; workingProcess.setComputer(null)); // &lt;b class=&quot;conum&quot;&gt;(2)&lt;/b&gt;
+            }
+        }
+        List&amp;lt;CloudComputer&amp;gt; computerList = new ArrayList&amp;lt;&amp;gt;(cloudBalance.getComputerList()); // &lt;b class=&quot;conum&quot;&gt;(3)&lt;/b&gt;
+        cloudBalance.setComputerList(computerList); // &lt;b class=&quot;conum&quot;&gt;(3)&lt;/b&gt;
+        problemChangeDirector.removeProblemFact(workingComputer, computerList::remove); // &lt;b class=&quot;conum&quot;&gt;(4)&lt;/b&gt;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Finds the working solution counterpart of the &lt;code&gt;computer&lt;/code&gt;. The &lt;code&gt;CloudComputer&lt;/code&gt; must have a field annotated with &lt;code&gt;@PlanningId&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Unassigns this computer from every process that runs on it. The string &quot;computer&quot; is the name of a &lt;code&gt;@PlanningVariable&lt;/code&gt; field of the &lt;code&gt;CloudProcess&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;As the &lt;code&gt;SolutionCloner&lt;/code&gt; does not clone a problem fact collection, it has to be done manually.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Removes the computer from the &lt;code&gt;computerList&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;While the &lt;code&gt;ProblemChange&lt;/code&gt; implementation might be simple in some cases, in others it may require changing multiple connected
+parts of the working solution. A correct &lt;code&gt;ProblemChange&lt;/code&gt; implementation has to perform any changes
+on the working solution instance using the &lt;code&gt;ProblemChangeDirector&lt;/code&gt; and has to respect requirements on solution cloning.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_solvermanager&quot;&gt;SolverManager&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;code&gt;SolverManager&lt;/code&gt; serves as an entry point for submitting planning problems to OptaPlanner. It allows solving multiple problems
+of the same kind in parallel and offers non-blocking operations that pass the best solutions to a user-defined &lt;code&gt;Consumer&lt;/code&gt;.
+Now, it also supports adding the &lt;code&gt;ProblemChange&lt;/code&gt;s, as the next example shows:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;public class SolvingService {
+    @Inject
+    SolverManager&amp;lt;CloudBalance, Long&amp;gt; solverManager; // &lt;b class=&quot;conum&quot;&gt;(1)&lt;/b&gt;
+
+    public void startSolving(Long problemId) {
+        solverManager.solveAndListen(problemId, this::loadProblem, bestSolution -&amp;gt; saveSolution(problemId, bestSolution)); // &lt;b class=&quot;conum&quot;&gt;(2)&lt;/b&gt;
+    }
+
+    public void addComputer(Long problemId, CloudComputer computer) {
+        solverManager.addProblemChange(problemId, (workingSolution, problemChangeDirector) -&amp;gt; { // &lt;b class=&quot;conum&quot;&gt;(3)&lt;/b&gt;
+            List&amp;lt;CloudComputer&amp;gt; computerList = new ArrayList&amp;lt;&amp;gt;(workingSolution.getComputerList());
+            workingSolution.setComputerList(computerList);
+            problemChangeDirector.addProblemFact(computer, computerList::add);
+        });
+    }
+
+    private CloudBalance loadProblem(Long problemId) {
+        // Load the input problem identified by the problemId.
+    }
+
+    private void saveSolution(Long problemId, CloudBalance cloudBalance) {
+        // Save the best solution, or send it to UI, etc.
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Injects the &lt;code&gt;SolverManager&lt;/code&gt;, assuming the application runs on top of Quarkus. Similarly, your can inject the &lt;code&gt;SolverManager&lt;/code&gt;
+in a Spring Boot application using the &lt;code&gt;@Autowired&lt;/code&gt; annotation.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Submits a problem to the &lt;code&gt;SolverManager&lt;/code&gt;. Every best solution is passed to the &lt;code&gt;saveSolution()&lt;/code&gt; method.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Adds a new computer to the working solution identified by the &lt;code&gt;problemId&lt;/code&gt; via a &lt;code&gt;ProblemChange&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_testing_problemchanges&quot;&gt;Testing ProblemChanges&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As any piece of a software project that implements non-trivial logic, &lt;code&gt;ProblemChange&lt;/code&gt;s should be unit-tested.
+What is the testable contract? First, make sure the right methods on the &lt;code&gt;ProblemChangeDescriptor&lt;/code&gt; are called, and second,
+the working solution must contain the expected changes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To help you with testing whether the correct methods of the &lt;code&gt;ProblemChangeDescriptor&lt;/code&gt; were called, there is the &lt;code&gt;MockProblemChangeDirector&lt;/code&gt;
+available in &lt;a href=&quot;https://search.maven.org/artifact/org.optaplanner/optaplanner-test&quot;&gt;org.optaplanner:optaplanner-test&lt;/a&gt;.
+The final example below shows how to use the &lt;code&gt;MockProblemChangeDirector&lt;/code&gt; together with &lt;a href=&quot;https://site.mockito.org/&quot;&gt;Mockito&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;public class CloudBalanceChangeTest {
+    @Test
+    public void addProcess() {
+        CloudProcess newProcess = new CloudProcess();
+        CloudBalance workingSolution = CloudBalance.emptySolution();
+        MockProblemChangeDirector mockProblemChangeDirector = Mockito.spy(new MockProblemChangeDirector()); // &lt;b class=&quot;conum&quot;&gt;(1)&lt;/b&gt;
+        ProblemChange problemChange = new AddProcessProblemChange(newProcess);
+        problemChange.doChange(workingSolution, mockProblemChangeDirector); // &lt;b class=&quot;conum&quot;&gt;(2)&lt;/b&gt;
+        verify(mockProblemChangeDirector).addEntity(same(newProcess), any()); // &lt;b class=&quot;conum&quot;&gt;(3)&lt;/b&gt;
+        assertEquals(1, workingSolution.getProcessList().size()); // &lt;b class=&quot;conum&quot;&gt;(4)&lt;/b&gt;
+        assertSame(newProcess, workingSolution.getProcessList().get(0)); // &lt;b class=&quot;conum&quot;&gt;(4)&lt;/b&gt;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;colist arabic&quot;&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Mockito.spy()&lt;/code&gt; wraps the &lt;code&gt;MockProblemChangeDirector&lt;/code&gt; instance and acts as a proxy.
+That makes it possible to verify whether some method of the &lt;code&gt;MockProblemChangeDirector&lt;/code&gt; has been called and what arguments
+have been passed to it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Performs the problem change, supplying the &lt;code&gt;MockProblemChangeDirector&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verifies that the &lt;code&gt;ProblemChangeDescriptor.addEntity()&lt;/code&gt; has been called with the &lt;code&gt;newProcess&lt;/code&gt; as its first argument.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verifies that the working solution contains the newly added process.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;code&gt;SolverManager&lt;/code&gt; now supports &lt;code&gt;ProblemChange&lt;/code&gt;s, offering real-time planning capabilities without having to write a lot of boilerplate code.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2021/10/26/DocsTurnOverANewLeaf.html</id>
+            <title type="html">OptaPlanner documentation turns over a new leaf</title>
+            <updated>2021-10-25T00:00:00+00:00</updated>
+            <published>2021-10-25T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2021/10/26/DocsTurnOverANewLeaf.html" rel="alternate" type="text/html" />
+            <author>
+                <name>rsynek</name>
+            </author>
+                    <category term="documentation"></category>
+                    <category term="website"></category>
+            <summary type="html">
+                 For years, OptaPlanner has been offering the documentation in two formats: single-page HTML and PDF. This now changes with the launch a new documentation website, built using Antora. What&amp;#8217;s ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;For years, &lt;a href=&quot;https://www.optaplanner.org&quot;&gt;OptaPlanner&lt;/a&gt; has been offering the documentation in two formats:
+single-page HTML and PDF.
+This now changes with the launch a new documentation website, built using &lt;a href=&quot;https://antora.org/&quot;&gt;Antora&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;What&amp;#8217;s so exciting about the new documentation?&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;First and foremost, it loads instantly as opposed to the old single-page HTML documentation.
+For example, if I want to read about &lt;em&gt;repeated planning&lt;/em&gt;,
+I open the single-page HTML docs and wait nearly half a minute for the page to load, despite having a very good cable connection.
+With the new documentation, it took me only 2 seconds as each chapter has its own HTML page and thus
+the content that has to be loaded is limited.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This also means it&amp;#8217;s now easier to effectively share links to a particular section.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Second, now you can search through the entire docs:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/26/DocsSearch.png&quot; alt=&quot;Search in the docs&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The search box at the top of the page shows suggestions as soon as you start typing. Each suggestion consists of
+the chapter and a link to where the search term occurs.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Third, if you spot a discrepancy in the documentation and would like to improve it, contributing was never easier:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/26/DocsEdit.png&quot; alt=&quot;Edit the docs&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Finally, this new documentation website is much friendlier to search engines, which should make it show up in Google search results more often than before.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_building_the_documentation_website&quot;&gt;Building the documentation website&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The documentation sources remain in
+the &lt;a href=&quot;https://github.com/kiegroup/optaplanner/tree/main/optaplanner-docs&quot;&gt;optaplanner-docs module in the optaplanner repository&lt;/a&gt;,
+but the website assembly, named &lt;code&gt;optaplanner-website-docs&lt;/code&gt;, became a part of the &lt;a href=&quot;https://github.com/kiegroup/optaplanner-website&quot;&gt;optaplanner-website&lt;/a&gt;:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/26/WebsiteStructure.png&quot; alt=&quot;optaplanner-website directory structure&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Similarly to the entire &lt;code&gt;optaplanner-website&lt;/code&gt;, the &lt;code&gt;optaplanner-website-docs&lt;/code&gt; is built using Maven. The Maven module
+acts as a wrapper over Antora, which generates the static site from AsciiDoc sources.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;There are two Antora playbooks referring to documentation sources. The first one, used by default, is &lt;code&gt;antora-playbook.yml&lt;/code&gt;
+that refers to the latest OptaPlanner release.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-yaml hljs&quot; data-lang=&quot;yaml&quot;&gt;...
+content:
+  edit_url: &apos;{web_url}/edit/main/{path}&apos;
+  sources:
+    - url: git@github.com:kiegroup/optaplanner.git
+      # Updates with every release to point to the latest release branch.
+      branches: [8.12.x]
+      start_path: optaplanner-docs/src
+...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To render the latest documentation:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;cd optaplanner-website/optaplanner-website-docs&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;mvn clean package&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Open the &lt;code&gt;index.html&lt;/code&gt; located in &lt;code&gt;target/website/docs&lt;/code&gt; in your browser.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The second Antora playbook, &lt;code&gt;antora-playbook-author.yml&lt;/code&gt;, is activated by the &lt;code&gt;author&lt;/code&gt; maven profile and
+refers to the current optaplanner local Git repository HEAD.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-yaml hljs&quot; data-lang=&quot;yaml&quot;&gt;...
+content:
+  edit_url: &apos;{web_url}/edit/main/{path}&apos;
+  sources:
+    # Assuming the optaplanner local repository resides next to the optaplanner-website.
+    - url: ../../optaplanner
+      branches: [HEAD]
+      start_path: optaplanner-docs/src
+...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To preview local changes in the documentation:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Make sure the optaplanner and optaplanner-website Git repositories are located in the same directory or change the local URL accordingly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;cd optaplanner-website/optaplanner-website-docs&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;mvn clean package -Pauthor&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Open the &lt;code&gt;index.html&lt;/code&gt; located in &lt;code&gt;target/website/docs&lt;/code&gt; in your browser.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_supported_documentation_formats&quot;&gt;Supported documentation formats&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Introducing new formats does not have to result in abandoning the old ones, and in our case it does not.
+While I encourage everyone to visit the new documentation website, the existing formats continue to be published with
+every release as before.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Also, should you need to have a look at a particular version of the documentation,
+it&amp;#8217;s still at your hand in the &lt;a href=&quot;https://docs.optaplanner.org/&quot;&gt;archive&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Since the &lt;code&gt;8.12.0.Final&lt;/code&gt; release, there is a new documentation website available under &lt;a href=&quot;https://www.optaplanner.org/docs&quot; class=&quot;bare&quot;&gt;https://www.optaplanner.org/docs&lt;/a&gt;.
+The documentation is now structured into pages by chapters and searchable. The single-page HTML and PDF documentation
+remains available for every release.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2021/10/14/OrderPickingQuickstart.html</id>
+            <title type="html">Order picking optimization in warehouses and supermarkets with OptaPlanner</title>
+            <updated>2021-10-13T00:00:00+00:00</updated>
+            <published>2021-10-13T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2021/10/14/OrderPickingQuickstart.html" rel="alternate" type="text/html" />
+            <author>
+                <name>wmedvede</name>
+            </author>
+                    <category term="use case"></category>
+                    <category term="order picking"></category>
+                    <category term="quarkus"></category>
+            <summary type="html">
+                 During the pandemic year, we saw many stores and supermarkets adapt their business in several ways. Sometimes these changes occurred from day to day. For example, as a consequence of the sharp ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;During the pandemic year, we saw many stores and supermarkets adapt their business in several ways. Sometimes these changes occurred from day to day.
+For example, as a consequence of the sharp decrease in customer physical visits, online orders increased exponentially.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;How many of them were prepared to deal optimally with this increase&amp;#8230;&amp;#8203;?&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;In this blog post, we present the new OptaPlanner &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts/tree/development/use-cases/order-picking&quot;&gt;order-picking quickstart&lt;/a&gt; that shows how to complete online orders in an optimized way!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_the_order_picking_problem&quot;&gt;The order picking problem&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The order picking problem consists of a set of orders that need to be prepared for delivery to various customers. Each order is composed of a set of order items (the requested products). These products are located on shelves in the warehouse or in the supermarket and occupy a specific volume of space.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To complete the orders, there is a set of available trolleys that follow a calculated path in the supermarket and pick the order items. One order item is picked on each step of this path.
+The location of the products within the warehouse determine the path of the trolley, and the space in each trolley is divided into a number of buckets with a specified capacity.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The goal of the order picking problem is to calculate a picking plan that provides the path for each trolley and considers the following constraints:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The distance to travel by the trolleys is minimized.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;All the order items must be picked.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Items from different orders mustn&amp;#8217;t be mixed in the same bucket, so enough buckets must be reserved for each of the orders that will be prepared on the same trolley.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The bucket&amp;#8217;s capacity is not exceeded by the total volume of the items on it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The splitting of an order into different trolleys should be minimized.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The following image shows a simplified view of the order picking problem input data and calculated picking plan:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingProblem.png&quot; alt=&quot;orderPickingProblem&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_warehouse_structure&quot;&gt;Warehouse structure&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To formulate the problem, the warehouse is defined as a set of shelves organized into columns and rows.
+Products are located on the left or right side of a specific shelf, on a specific row. The shelf, side, and row determine the product location.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingSimplifiedWarehouseStructure.png&quot; alt=&quot;orderPickingSimplifiedWarehouseStructure&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_the_new_quickstart&quot;&gt;The new quickstart&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_project_structure&quot;&gt;Project structure&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The following image shows the maven project that comprises the quickstart:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingProjectStructure.png&quot; alt=&quot;orderPickingProjectStructure&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The server side code is in the &lt;code&gt;src/main/java&lt;/code&gt; directory and is organized in four packages:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;dlist&quot;&gt;
+&lt;dl&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;bootstrap&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Helper classes for generating the randomized (but reproducible) data set used by the quickstart on application startup.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;domain&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Contains the domain model for representing the problem, and the planning classes used by OptaPlanner, for example the &lt;code&gt;@PlanningSolution&lt;/code&gt; and the &lt;code&gt;@PlanningEntity&lt;/code&gt;.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;solver&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Contains the &lt;code&gt;ConstraintProvider&lt;/code&gt; implementation.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;rest&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Contains the REST API used by the client-side code to start and stop solving, and to retrieve the best solution to display.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The client code is in the &lt;code&gt;src/main/resources/META-INF/resources/&lt;/code&gt; directory.
+This directory has an &lt;code&gt;index.html&lt;/code&gt; file that contains the basic HTML structure and loads the &lt;code&gt;app.js&lt;/code&gt; file that calls the server&amp;#8217;s REST API and makes the web page dynamic.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_planning_domain_model&quot;&gt;Planning domain model&lt;/h3&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingClassDiagram.png&quot; alt=&quot;orderPickingClassDiagram&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_order_picking_constraints&quot;&gt;Order picking constraints&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The order picking constraints are implemented using the Constraint Streams API, and they can be found in the &lt;code&gt;org.acme.orderpicking.solver.OrderPickingConstraintProvider&lt;/code&gt; class.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The following constraints are provided:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;dlist&quot;&gt;
+&lt;dl&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;requiredNumberOfBuckets&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Hard constraint to enforce the requirement that a trolley has a sufficient number of buckets for holding all of the elements picked along the path for each order, while at the same time the bucket’s capacity is not exceeded, and items from different orders are not mixed in the same bucket.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;minimizeDistanceFromPreviousTrolleyStep&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Soft constraint to enforce the requirement that the distance between the current trolley step, and the previous step in the calculated path is minimized.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;minimizeDistanceFromLastTrolleyStepToPathOrigin&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Soft constraint to enforce the requirement that the distance between the first trolley stop (the path origin), and the last trolley stop in the calculated path is minimized.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The conjunction of the &lt;code&gt;minimizeDistanceFromPreviousTrolleyStep&lt;/code&gt; constraint applied to every step on the path, and the &lt;code&gt;minimizeDistanceFromLastTrolleyStepToPathOrigin&lt;/code&gt; constraint, enforces the entire path minimization.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;dlist&quot;&gt;
+&lt;dl&gt;
+&lt;dt class=&quot;hdlist1&quot;&gt;minimizeOrderSplitByTrolley&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;Soft constraint to minimize the orders splitting into different trolleys.&lt;/p&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_execution_explained&quot;&gt;Execution explained&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;When you first start the order picker, you will see that no picking plan or paths are calculated. No worries, it&amp;#8217;s perfectly fine because the solver isn&amp;#8217;t executed yet.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Let&amp;#8217;s take a moment to take a look at the initial data set before starting the solver. You use the Unassigned tab to do this.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_unassigned_entities&quot;&gt;Unassigned entities&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;The information about the unassigned trolleys and orders is shown on the different sub-tabs.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Before starting the solver, you can view all of the elements in the initial data set on this tab. However, as soon the solver starts solving, you will see that elements start disappearing from this tab. Good news, they&amp;#8217;re becoming part of the picking plan!.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Unassigned trolleys&lt;/strong&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingUnassignedTrolleys.png&quot; alt=&quot;orderPickingUnassignedTrolleys&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Unassigned Order_1&lt;/strong&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingUnassignedOrders.png&quot; alt=&quot;orderPickingUnassignedOrders&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_solver_execution&quot;&gt;Solver execution&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Click the Start button to start the solver. When the solver is started, you&amp;#8217;ll see that the Picking plan tab will start showing the information about the calculated plan.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingPlan.png&quot; alt=&quot;orderPickingPlan&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;admonitionblock note&quot;&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class=&quot;icon&quot;&gt;
+&lt;div class=&quot;title&quot;&gt;Note&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class=&quot;content&quot;&gt;
+While the solver is running, the calculated plan is refreshed every 2 seconds, causing a screen refresh effect. You can use the stop solving button to mitigate this effect.
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect2&quot;&gt;
+&lt;h3 id=&quot;_trolley_navigation&quot;&gt;Trolley navigation&lt;/h3&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Use the Map tab to view a representation of how the different trolleys navigate the warehouse according to the calculated paths.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;imageblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;img src=&quot;https://www.beautifulnature.github.io/blog/2021/10/14/orderPickingTrolleyPaths.png&quot; alt=&quot;orderPickingTrolleyPaths&quot;&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_running_the_quickstart&quot;&gt;Running the quickstart&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To run the quickstart, follow these steps:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Clone the optaplanner-quickstarts repository:&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;$ git clone https://github.com/kiegroup/optaplanner-quickstarts&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot; start=&quot;2&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Switch to the &lt;code&gt;development&lt;/code&gt; branch with the following commands:&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;$ cd optaplanner-quickstarts
+$ git checkout development&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot; start=&quot;3&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Navigate to the &lt;code&gt;use-cases/order-picking&lt;/code&gt; directory.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;$ cd use-cases/order-picking&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot; start=&quot;4&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Start the Order Picking quick start in Quarkus development mode:&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre&gt;$ mvn quarkus:dev&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot; start=&quot;5&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Open &lt;a href=&quot;http://localhost:8080&quot; class=&quot;bare&quot;&gt;http://localhost:8080&lt;/a&gt; in your browser and click on the &lt;strong&gt;Solve&lt;/strong&gt; button.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+        <entry>
+            <id>https://www.beautifulnature.github.io/blog/2021/08/19/ConstraintStreamsSomeMoreLove.html</id>
+            <title type="html">Constraint Streams get some more love</title>
+            <updated>2021-08-18T00:00:00+00:00</updated>
+            <published>2021-08-18T00:00:00+00:00</published>
+            <link href="http://www.beautifulnature.github.io/blog/2021/08/19/ConstraintStreamsSomeMoreLove.html" rel="alternate" type="text/html" />
+            <author>
+                <name>triceo</name>
+            </author>
+                    <category term="constraint"></category>
+                    <category term="feature"></category>
+            <summary type="html">
+                 We have recently merged a lot of improvements to OptaPlanner&apos;s Constraint Streams API in order to make it faster and even easier to use. Let&amp;#8217;s take a closer look at some of them. Constraint ...
+            </summary>
+            <content type="html">
+                &lt;div id=&quot;preamble&quot;&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We have recently merged a lot of improvements to &lt;a href=&quot;https://www.optaplanner.org&quot;&gt;OptaPlanner&lt;/a&gt;&apos;s &lt;a href=&quot;https://docs.optaplanner.org/latestFinal/optaplanner-docs/html_single/index.html#constraintStreams&quot;&gt;Constraint Streams API&lt;/a&gt;
+in order to make it faster and even easier to use.
+Let&amp;#8217;s take a closer look at some of them.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_constraint_streams_by_default&quot;&gt;Constraint Streams by default&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;I find it hard to believe that it&amp;#8217;s been over two years already since we&amp;#8217;ve introduced Constraint Streams into OptaPlanner; how time flies!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;To get you started, OptaPlanner has always brought a &lt;a href=&quot;https://www.optaplanner.org/download/download.html&quot;&gt;wide selection of examples&lt;/a&gt; and more recently &lt;a href=&quot;https://github.com/kiegroup/optaplanner-quickstarts&quot;&gt;quickstarts&lt;/a&gt;.
+While quickstarts have always used Constraint Streams and Constraint Streams only, the examples being older in age, they typically bring more scoring implementations, such as &lt;a href=&quot;https://docs.optaplanner.org/latestFinal/optaplanner-docs/html_single/index.html#droolsScoreCalculation&quot;&gt;DRL&lt;/a&gt; or &lt;a href=&quot;https://docs.optaplanner.org/latestFinal/optaplanner-docs/html_single/index.html#incrementalJavaScoreCalculation&quot;&gt;incremental Java&lt;/a&gt;.
+To clearly state that Constraint Streams are now the scoring method of choice, we have recently converted all OptaPlanner examples to use Constraint Streams by default.
+That said, we do not intend to deprecate any of the other scoring methods any time soon.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_new_constraint_collectors&quot;&gt;New constraint collectors&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Seeing increased adoption of Constraint Streams, we have been expanding the selection of &lt;a href=&quot;https://docs.optaplanner.org/latestFinal/optaplanner-docs/html_single/index.html#constraintStreamsGroupingAndCollectors&quot;&gt;constraint collectors&lt;/a&gt; available out of the box.
+Recently, we have added the following new constraint collectors:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;ulist&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;average()&lt;/code&gt; constraint collector allows you to calculate an average of a group of items.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;compose()&lt;/code&gt; collector allows you to merge results of several constraint collectors. (For example, the &lt;code&gt;average()&lt;/code&gt; collector is a composite of &lt;code&gt;count()&lt;/code&gt; and &lt;code&gt;sum()&lt;/code&gt;.)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;conditionally()&lt;/code&gt; constraint collectors allows you to only delegate to another collector if a given condition is met first.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Especially with the latter two collectors, the expressive power of Constraint Streams has grown significantly.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_faster_constraint_collectors&quot;&gt;Faster constraint collectors&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Until recently, constraint collectors &lt;code&gt;toList()&lt;/code&gt;, &lt;code&gt;toSet()&lt;/code&gt;, &lt;code&gt;toSortedSet()&lt;/code&gt;, &lt;code&gt;toMap()&lt;/code&gt; and &lt;code&gt;toSortedMap()&lt;/code&gt; have been comparatively slow.
+We have now changed the underlying implementation to be much more friendly to incremental calculation, and the end result is a performance improvement on the order of magnitudes on large enough data sets.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_experimental_constraint_collectors&quot;&gt;Experimental constraint collectors&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As we were implementing constraint providers for all the various examples, we noticed some constraints (which were already hard to implement in DRL) were impossible with Constraint Streams as it stands.
+Consider the following &lt;a href=&quot;https://docs.optaplanner.org/latestFinal/optaplanner-docs/html_single/index.html#nurseRostering&quot;&gt;Nurse Rostering&lt;/a&gt; &lt;a href=&quot;https://github.com/kiegroup/optaplanner/blob/8.10.0.Final/optaplanner-examples/src/main/resources/org/optaplanner/examples/nurserostering/solver/nurseRosteringConstraints.drl#L97&quot;&gt;DRL-based constraint&lt;/a&gt; to penalize too many consecutive shifts:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-drl hljs&quot; data-lang=&quot;drl&quot;&gt;    rule &quot;insertEmployeeConsecutiveAssignmentStart&quot; when
+        ... // Omitted for brevity.
+    then
+        insertLogical(new EmployeeConsecutiveAssignmentStart($employee, $shiftDate));
+    end
+
+    rule &quot;insertEmployeeConsecutiveAssignmentEnd&quot; when
+        ... // Omitted for brevity.
+    then
+        insertLogical(new EmployeeConsecutiveAssignmentEnd($employee, $shiftDate));
+    end
+
+    rule &quot;insertEmployeeWorkSequence&quot; when
+        EmployeeConsecutiveAssignmentStart($employee : employee, $firstDayIndex : shiftDateDayIndex)
+        EmployeeConsecutiveAssignmentEnd(employee == $employee, shiftDateDayIndex &amp;gt;= $firstDayIndex, $lastDayIndex : shiftDateDayIndex )
+        not EmployeeConsecutiveAssignmentEnd(employee == $employee, shiftDateDayIndex &amp;gt;= $firstDayIndex &amp;amp;&amp;amp; &amp;lt; $lastDayIndex)
+    then
+        insertLogical(new EmployeeWorkSequence($employee, $firstDayIndex, $lastDayIndex));
+    end
+
+    rule &quot;minimumConsecutiveWorkingDays&quot; when
+        $contractLine : MinMaxContractLine(
+            contractLineType == ContractLineType.CONSECUTIVE_WORKING_DAYS, minimumEnabled == true,
+            $contract : contract, $minimumValue : minimumValue
+        )
+        EmployeeWorkSequence(getEmployee().getContract() == $contract, dayLength &amp;lt; $minimumValue, $dayLength : dayLength)
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, ($dayLength - $minimumValue) * $contractLine.getMinimumWeight());
+    end&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;As you can see, this is a lot of DRL which fundamentally does this:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;olist arabic&quot;&gt;
+&lt;ol class=&quot;arabic&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;Infer the first shift in a sequence of consecutive shifts.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Infer the last shift in a sequence of consecutive shifts.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Infer all the non-overlapping sequences.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Penalize sequences longer than what is prescribed by the contract.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;Now consider how the same constraint is accomplished with Constraint Streams, using the experimental consecutive constraint collector:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;listingblock&quot;&gt;
+&lt;div class=&quot;content&quot;&gt;
+&lt;pre class=&quot;highlightjs highlight&quot;&gt;&lt;code class=&quot;language-java hljs&quot; data-lang=&quot;java&quot;&gt;    Constraint consecutiveWorkingDays(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(MinMaxContractLine.class)
+            .filter(minMaxContractLine -&amp;gt; minMaxContractLine
+                .getContractLineType() == ContractLineType.CONSECUTIVE_WORKING_DAYS &amp;amp;&amp;amp;
+                minMaxContractLine.isEnabled())
+            .join(ShiftAssignment.class,
+                Joiners.equal(ContractLine::getContract, ShiftAssignment::getContract))
+            .groupBy((contract, shift) -&amp;gt; shift.getEmployee(),
+                (contract, shift) -&amp;gt; contract,
+                ExperimentalConstraintCollectors.consecutive((contract, shift) -&amp;gt; shift.getShiftDate(),
+                    ShiftDate::getDayIndex))
+            .flattenLast(ConsecutiveInfo::getConsecutiveSequences)
+            .filter((employee, contract, shiftList) -&amp;gt; contract.isViolated(shiftList.getLength()))
+            .penalize(&quot;consecutiveWorkingDays&quot;, HardSoftScore.ONE_SOFT,
+                    (employee, contract, shiftList) -&amp;gt; contract.getViolationAmount(shiftList.getLength()));
+    }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This constraint uses the experimental consecutive constraint collector to get us a list of all sequences of consecutive shifts.
+This list is then &lt;a href=&quot;https://docs.optaplanner.org/latestFinal/optaplanner-docs/html_single/index.html#constraintStreamsFlattening&quot;&gt;flattened&lt;/a&gt;, giving us each sequence individually.
+As you can see, this is a much more concise implementation of the same behavior, with the brunt of the logic hidden inside the constraint collector itself.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;This constraint collector &lt;a href=&quot;https://github.com/kiegroup/optaplanner/blob/8.10.0.Final/optaplanner-examples/src/main/java/org/optaplanner/examples/common/experimental/ExperimentalConstraintCollectors.java&quot;&gt;is not part of our public API&lt;/a&gt; and we consider it experimental.
+Before we make it part of the public API, we are looking for your feedback to make sure it fits the various use cases that are out there.
+If you have any questions or see issues in applying this pattern to your own constraints, do not hesitate to &lt;a href=&quot;https://www.optaplanner.org/community/getHelp.html&quot;&gt;reach out to us&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;sect1&quot;&gt;
+&lt;h2 id=&quot;_conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;div class=&quot;sectionbody&quot;&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;All of these improvements are available as of OptaPlanner 8.11.0.Final, coming soon to a mirror near you.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;paragraph&quot;&gt;
+&lt;p&gt;We will continue improving Constraint Streams as we find more and more problems to solve.
+If you want to make sure we can solve your problems too, &lt;a href=&quot;https://www.optaplanner.org/community/getHelp.html&quot;&gt;share them with us&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;")
+            </content>
+        </entry>
+</feed>
